@@ -30,12 +30,8 @@ TICKETS = {}
 
 
 def _seed_tickets():
-    """Pre-load sample complaints with AI analysis already attached, so the
-    dashboard isn't empty on first load."""
     for complaint in SAMPLE_COMPLAINTS:
-        ticket = dict(complaint)
-        ticket["analysis"] = analyze_complaint(complaint)
-        TICKETS[ticket["id"]] = ticket
+        TICKETS[complaint["id"]] = complaint
 
 
 _seed_tickets()
@@ -100,5 +96,5 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     debug = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
     print(f"\n  AI Support Copilot running at http://localhost:{port}")
-    print(f"  AI mode: {'LIVE (Anthropic API)' if is_live_mode() else 'MOCK (no API key set)'}\n")
+    print(f"  AI mode: {'LIVE (Gemini API)' if is_live_mode() else 'MOCK (no API key set)'}\n")
     app.run(host="0.0.0.0", port=port, debug=debug)

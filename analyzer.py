@@ -11,8 +11,8 @@ Given a raw customer complaint, this module returns a structured analysis:
 - a suggested resolution the agent can use as a starting point
 
 Two modes:
-1. LIVE mode  - calls the Anthropic API (Claude) with a structured prompt.
-2. MOCK mode  - used automatically when no ANTHROPIC_API_KEY is set, so the
+1. LIVE mode  - calls the OpenAI API with a structured prompt.
+2. MOCK mode  - used automatically when no OPENAI_API_KEY is set, so the
                 app is fully demoable with zero setup. Uses lightweight
                 keyword heuristics to produce plausible, varied results.
 
@@ -24,10 +24,14 @@ returns the same shape.
 import os
 import json
 import re
-import requests
+from google import genai
 
-ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages"
-MODEL = "claude-sonnet-4-6"
+
+# Clear proxy environment variables to avoid issues with OpenAI client initialization
+for proxy_var in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy', 'ALL_PROXY']:
+    os.environ.pop(proxy_var, None)
+
+MODEL = "gemini-2.5-flash"
 
 VALID_SENTIMENTS = {"positive", "neutral", "negative", "very_negative"}
 VALID_CATEGORIES = {
@@ -42,24 +46,35 @@ VALID_PRIORITIES = {"low", "medium", "high", "urgent"}
 
 
 def is_live_mode() -> bool:
-    """True if a real Anthropic API key is configured."""
-    return bool(os.environ.get("ANTHROPIC_API_KEY"))
+    return bool(os.environ.get("GEMINI_API_KEY"))
 
 
-SYSTEM_PROMPT = """You are an AI assistant embedded in a customer support platform. \
-Your job is to triage incoming customer messages so human agents can respond faster.
+SYSTEM_PROMPT = """You are an AI Customer Success Copilot embedded in a customer support platform.
 
-For every message you are given, analyze it and return ONLY a JSON object \
-(no preamble, no markdown fences, no explanation outside the JSON) with exactly \
+Your job is to help Customer Success and Support teams triage incoming customer messages so human agents can respond faster and more effectively.
+
+For every message you are given, analyze it and return ONLY a JSON object
+(no preamble, no markdown fences, no explanation outside the JSON) with exactly
 these fields:
 
 {
   "sentiment": one of "positive" | "neutral" | "negative" | "very_negative",
+
   "category": one of "billing" | "technical" | "shipping" | "account" | "product_feedback" | "other",
+
   "priority": one of "low" | "medium" | "high" | "urgent",
+
+  "customer_impact": one of "low" | "medium" | "high",
+
+  "escalation_required": true or false,
+
+  "recommended_team": the most appropriate team to handle the issue
+  (examples: Technical Support, Billing Team, Account Management, Product Team, Customer Success Team),
+
   "summary": a one-sentence neutral summary of the issue (max 20 words),
-  "suggested_resolution": 2-3 sentences suggesting how the agent could resolve or respond to this, \
-specific to the message (not generic boilerplate),
+
+  "suggested_resolution": 2-3 sentences suggesting how the agent could resolve or respond to this, specific to the message,
+
   "reasoning": one short sentence explaining why you assigned this priority level
 }
 
@@ -102,7 +117,10 @@ def _extract_json(text: str) -> dict:
     if start != -1 and end != -1 and end > start:
         text = text[start : end + 1]
 
-    return json.loads(text)
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Failed to parse JSON from response: {text[:100]}... Error: {e}")
 
 
 def _validate_and_normalize(result: dict) -> dict:
@@ -135,30 +153,35 @@ def _validate_and_normalize(result: dict) -> dict:
     }
 
 
-def _call_claude(complaint: dict) -> dict:
-    """Call the live Anthropic API. Raises on failure (caller decides fallback)."""
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    headers = {
-        "x-api-key": api_key,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-    }
-    payload = {
-        "model": MODEL,
-        "max_tokens": 500,
-        "system": SYSTEM_PROMPT,
-        "messages": [{"role": "user", "content": _build_user_prompt(complaint)}],
-    }
+def _call_gemini(complaint: dict) -> dict:
+    """
+    Call Gemini API and return structured analysis.
+    """
+    try:
+        client = genai.Client(
+            api_key=os.environ.get("GEMINI_API_KEY")
+        )
 
-    response = requests.post(ANTHROPIC_API_URL, headers=headers, json=payload, timeout=30)
-    response.raise_for_status()
-    data = response.json()
+        prompt = (
+            SYSTEM_PROMPT
+            + "\n\n"
+            + _build_user_prompt(complaint)
+        )
 
-    text_blocks = [block["text"] for block in data.get("content", []) if block.get("type") == "text"]
-    raw_text = "\n".join(text_blocks)
+        response = client.models.generate_content(
+            model=MODEL,
+            contents=prompt
+        )
 
-    parsed = _extract_json(raw_text)
-    return _validate_and_normalize(parsed)
+        raw_text = response.text
+
+        parsed = _extract_json(raw_text)
+
+        return _validate_and_normalize(parsed)
+
+    except Exception as e:
+        print(f"Gemini API Error: {type(e).__name__}: {str(e)}")
+        raise
 
 
 # ---------------------------------------------------------------------------
@@ -269,7 +292,7 @@ def analyze_complaint(complaint: dict) -> dict:
     """
     if is_live_mode():
         try:
-            result = _call_claude(complaint)
+            result = _call_gemini(complaint)
             result["mode"] = "live"
             return result
         except Exception as exc:  # noqa: BLE001 - we deliberately fall back on any failure

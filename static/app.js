@@ -38,7 +38,7 @@ async function loadStatus() {
   const data = await res.json();
   const pill = document.getElementById("modePill");
   if (data.mode === "live") {
-    pill.textContent = "Live AI (Claude)";
+    pill.textContent = "Live AI (Gemini)";
     pill.classList.add("live");
   } else {
     pill.textContent = "Mock mode (no API key)";

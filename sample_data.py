@@ -16,6 +16,15 @@ SAMPLE_COMPLAINTS = [
             "and I'm honestly considering cancelling my subscription."
         ),
         "created_at": "2026-06-18T09:14:00",
+
+        "analysis": {
+    "sentiment": "negative",
+    "category": "billing",
+    "priority": "high",
+    "summary": "Customer reports duplicate charges for a single order.",
+    "suggested_resolution": "Verify the payment records, confirm the duplicate transaction, and process a refund. Apologize for the inconvenience and reassure the customer that the issue is being investigated.",
+    "reasoning": "Financial impact and repeated occurrence increase urgency."
+}
     },
     {
         "id": "t-1002",
@@ -28,6 +37,15 @@ SAMPLE_COMPLAINTS = [
             "is it somewhere else?"
         ),
         "created_at": "2026-06-18T11:02:00",
+
+        "analysis": {
+    "sentiment": "neutral",
+    "category": "account",
+    "priority": "low",
+    "summary": "Customer needs help updating their shipping address.",
+    "suggested_resolution": "Guide the customer to the address management section or provide step-by-step instructions. Confirm that future orders will use the updated address.",
+    "reasoning": "Informational request with no immediate business impact."
+}
     },
     {
         "id": "t-1003",
@@ -41,6 +59,15 @@ SAMPLE_COMPLAINTS = [
             "supposed to be special."
         ),
         "created_at": "2026-06-19T08:40:00",
+
+        "analysis": {
+    "sentiment": "very_negative",
+    "category": "shipping",
+    "priority": "high",
+    "summary": "Customer received a damaged product intended as a gift.",
+    "suggested_resolution": "Arrange an expedited replacement or refund immediately. Apologize for the damaged shipment and coordinate with logistics to investigate packaging issues.",
+    "reasoning": "Customer is highly dissatisfied and faces a time-sensitive event."
+}
     },
     {
         "id": "t-1004",
@@ -53,6 +80,15 @@ SAMPLE_COMPLAINTS = [
             "Kind of annoying but I can still use the desktop site for now."
         ),
         "created_at": "2026-06-19T14:23:00",
+
+        "analysis": {
+    "sentiment": "negative",
+    "category": "technical",
+    "priority": "medium",
+    "summary": "Customer experiences repeated logout issues after a mobile app update.",
+    "suggested_resolution": "Collect device and app version details, investigate the latest release, and provide troubleshooting steps. Escalate to engineering if the issue is reproducible.",
+    "reasoning": "Service remains usable through desktop, reducing urgency."
+}
     },
     {
         "id": "t-1005",
@@ -65,6 +101,15 @@ SAMPLE_COMPLAINTS = [
             "to export to CSV? Would be the cherry on top."
         ),
         "created_at": "2026-06-19T16:55:00",
+
+        "analysis": {
+    "sentiment": "positive",
+    "category": "product_feedback",
+    "priority": "low",
+    "summary": "Customer praises the dashboard and suggests CSV export functionality.",
+    "suggested_resolution": "Thank the customer for the feedback and forward the feature request to the product team for consideration.",
+    "reasoning": "Positive feedback with a non-urgent enhancement request."
+}
     },
     {
         "id": "t-1006",
@@ -78,6 +123,15 @@ SAMPLE_COMPLAINTS = [
             "We are a paying enterprise customer on the annual plan."
         ),
         "created_at": "2026-06-20T07:05:00",
+
+        "analysis": {
+    "sentiment": "very_negative",
+    "category": "account",
+    "priority": "urgent",
+    "summary": "Enterprise customer is locked out before payroll processing.",
+    "suggested_resolution": "Escalate immediately to the account recovery team, verify ownership, and restore access as a business-critical incident. Provide continuous updates until resolution.",
+    "reasoning": "Business operations are blocked for an enterprise customer."
+}
     },
     {
         "id": "t-1007",
@@ -89,5 +143,14 @@ SAMPLE_COMPLAINTS = [
             "Just want to check before I open the box."
         ),
         "created_at": "2026-06-20T09:30:00",
+
+        "analysis": {
+    "sentiment": "neutral",
+    "category": "other",
+    "priority": "low",
+    "summary": "Customer is asking about the return policy for sale items.",
+    "suggested_resolution": "Provide the applicable return policy and clarify any exceptions related to promotional purchases.",
+    "reasoning": "General inquiry with no service disruption."
+}
     },
 ]
