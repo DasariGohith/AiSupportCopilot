@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support Copilot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="app">
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="brand">
+        <span class="brand-mark">◆</span>
+        <span class="brand-name">Support Copilot</span>
+      </div>
+      <span class="mode-pill" id="modePill">checking mode…</span>
+    </div>
+    <div class="topbar-right">
+      <div class="stat">
+        <span class="stat-num" id="statUrgent">–</span>
+        <span class="stat-label">urgent</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" id="statHigh">–</span>
+        <span class="stat-label">high</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" id="statTotal">–</span>
+        <span class="stat-label">open</span>
+      </div>
+      <button class="btn-primary" id="newTicketBtn">+ New complaint</button>
+    </div>
+  </header>
+
+  <main class="layout">
+
+    <aside class="filters">
+      <div class="filters-section">
+        <h3>Priority</h3>
+        <label class="filter-row"><input type="checkbox" value="urgent" class="f-priority" checked><span class="dot dot-urgent"></span>Urgent</label>
+        <label class="filter-row"><input type="checkbox" value="high" class="f-priority" checked><span class="dot dot-high"></span>High</label>
+        <label class="filter-row"><input type="checkbox" value="medium" class="f-priority" checked><span class="dot dot-medium"></span>Medium</label>
+        <label class="filter-row"><input type="checkbox" value="low" class="f-priority" checked><span class="dot dot-low"></span>Low</label>
+      </div>
+
+      <div class="filters-section">
+        <h3>Category</h3>
+        <label class="filter-row"><input type="checkbox" value="billing" class="f-category" checked>Billing</label>
+        <label class="filter-row"><input type="checkbox" value="technical" class="f-category" checked>Technical</label>
+        <label class="filter-row"><input type="checkbox" value="shipping" class="f-category" checked>Shipping</label>
+        <label class="filter-row"><input type="checkbox" value="account" class="f-category" checked>Account</label>
+        <label class="filter-row"><input type="checkbox" value="product_feedback" class="f-category" checked>Feedback</label>
+        <label class="filter-row"><input type="checkbox" value="other" class="f-category" checked>Other</label>
+      </div>
+
+      <div class="filters-section">
+        <h3>Sentiment</h3>
+        <label class="filter-row"><input type="checkbox" value="very_negative" class="f-sentiment" checked>Very negative</label>
+        <label class="filter-row"><input type="checkbox" value="negative" class="f-sentiment" checked>Negative</label>
+        <label class="filter-row"><input type="checkbox" value="neutral" class="f-sentiment" checked>Neutral</label>
+        <label class="filter-row"><input type="checkbox" value="positive" class="f-sentiment" checked>Positive</label>
+      </div>
+    </aside>
+
+    <section class="queue">
+      <div class="queue-header">
+        <h2>Ticket queue</h2>
+        <span class="queue-sub">Sorted by priority, most urgent first</span>
+      </div>
+      <div id="ticketList" class="ticket-list">
+        <!-- tickets render here -->
+      </div>
+      <div id="emptyState" class="empty-state" hidden>
+        <p>No tickets match the current filters.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- New ticket modal -->
+<div class="modal-backdrop" id="modalBackdrop" hidden>
+  <div class="modal">
+    <div class="modal-header">
+      <h3>New complaint</h3>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+    <form id="ticketForm" class="modal-body">
+      <div class="form-row">
+        <label for="customer">Customer name</label>
+        <input type="text" id="customer" placeholder="e.g. Jordan Lee">
+      </div>
+      <div class="form-row">
+        <label for="channel">Channel</label>
+        <select id="channel">
+          <option>Email</option>
+          <option>Chat</option>
+          <option>Phone (transcribed)</option>
+          <option>Web Form</option>
+          <option>Social</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="subject">Subject</label>
+        <input type="text" id="subject" placeholder="Short summary of the issue">
+      </div>
+      <div class="form-row">
+        <label for="message">Message *</label>
+        <textarea id="message" rows="6" placeholder="Paste the customer's complaint here…" required></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-ghost" id="cancelBtn">Cancel</button>
+        <button type="submit" class="btn-primary" id="submitBtn">Analyze &amp; add</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Ticket detail modal -->
+<div class="modal-backdrop" id="detailBackdrop" hidden>
+  <div class="modal modal-detail" id="detailModal">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
