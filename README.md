@@ -1,7 +1,7 @@
 # AI Customer Support Copilot
 
 An AI-powered triage dashboard for customer support teams. It takes incoming
-customer complaints, analyzes them with an LLM (Claude), and surfaces a
+customer complaints, analyzes them with an LLM (Gemini), and surfaces a
 priority-sorted queue with sentiment, category, and a suggested resolution
 for each ticket — so agents can see what needs attention first and respond
 faster.
